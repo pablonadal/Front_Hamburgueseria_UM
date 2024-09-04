@@ -1,3 +1,8 @@
+PARA INICIAR APP, CORRER COMANDO "npx expo start --tunnel"
+TENER EN CUENTA: desactivar vpn y cambiar direccion de "localhost", por algun motivo no me toma el localhost y hay que poner la direccion ip que se te fue asignada a tu computadora, ¿como ver esa direccion? comando ipconfig...
+
+
+
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
