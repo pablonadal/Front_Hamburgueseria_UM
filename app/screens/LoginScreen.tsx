@@ -43,7 +43,6 @@ const LoginScreen: React.FC = () => {
       />
       <CustomButton title="Iniciar Sesión" onPress={handleLogin} />
 
-      {/* Muestra el mensaje de error si existe */}
       {errorMessage && (
         <Text style={styles.errorText}>{errorMessage}</Text> // Uso de <Text> para mostrar el mensaje de error
       )}

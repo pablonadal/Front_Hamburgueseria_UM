@@ -1,8 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, Button, StyleSheet, FlatList } from 'react-native'; // Asegúrate de importar 'Text'
+import { View, Text, Button, StyleSheet, FlatList } from 'react-native';
 import axios from 'axios';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import AuthContext, { AuthProvider } from './context/AuthContext';
 import LoginScreen from './screens/LoginScreen';
+import ModifyBurgerScreen from './screens/ModifyBurgerScreen';
 
 interface Hamburguesa {
   id: number;
@@ -11,7 +14,9 @@ interface Hamburguesa {
   ingredientes: string;
 }
 
-const HamburguesaList: React.FC = () => {
+const Stack = createStackNavigator();
+
+const HamburguesaList: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [hamburguesas, setHamburguesas] = useState<Hamburguesa[]>([]);
   const { token, logout } = useContext(AuthContext);
 
@@ -25,18 +30,17 @@ const HamburguesaList: React.FC = () => {
     try {
       const response = await axios.get('http://192.168.100.45:8080/api/hamburguesas', {
         headers: {
-          Authorization: `Bearer ${token}`, // Enviar el token en la cabecera
+          Authorization: `Bearer ${token}`,
         },
       });
       setHamburguesas(response.data);
     } catch (error) {
       console.error(error);
-      // Si necesitas mostrar un error, asegúrate de que esté en un componente <Text>
     }
   };
 
   const modificarHamburguesa = (id: number) => {
-    console.log(`Modificar hamburguesa con ID: ${id}`);
+    navigation.navigate('ModificarHamburguesa', { id });
   };
 
   const imprimirTicket = (id: number) => {
@@ -60,7 +64,6 @@ const HamburguesaList: React.FC = () => {
         renderItem={renderHamburguesa}
         keyExtractor={(item) => item.id.toString()}
       />
-
       <Button title="Cerrar Sesión" onPress={logout} />
     </View>
   );
@@ -70,22 +73,25 @@ const App: React.FC = () => {
   const { isAuthenticated } = useContext(AuthContext);
 
   return (
-    <View style={{ flex: 1 }}>
-      {/* Renderizado condicional */}
+    <Stack.Navigator>
       {isAuthenticated ? (
-        <HamburguesaList />
+        <>
+          <Stack.Screen name="Hamburguesas" component={HamburguesaList} />
+          <Stack.Screen name="ModificarHamburguesa" component={ModifyBurgerScreen} />
+        </>
       ) : (
-        <LoginScreen />
+        <Stack.Screen name="Login" component={LoginScreen} />
       )}
-    </View>
+    </Stack.Navigator>
   );
 };
 
-// Envolver la aplicación con el proveedor de autenticación
 const MainApp: React.FC = () => {
   return (
     <AuthProvider>
-      <App />
+      <NavigationContainer independent={true}>
+        <App />
+      </NavigationContainer>
     </AuthProvider>
   );
 };
