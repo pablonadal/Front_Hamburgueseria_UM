@@ -1,8 +1,11 @@
 import React, { useState, useContext, useCallback } from 'react';
-import { View, Text, Button, StyleSheet, FlatList } from 'react-native';
+import { View, Text, Button, StyleSheet, FlatList, Alert } from 'react-native';
 import axios from 'axios';
-import { useFocusEffect } from '@react-navigation/native'; // Importa useFocusEffect
+import { useFocusEffect } from '@react-navigation/native';
 import AuthContext from '../context/AuthContext';
+import * as Print from 'expo-print'; // Para generar PDFs
+import * as FileSystem from 'expo-file-system'; // Para gestionar archivos
+import * as Sharing from 'expo-sharing'; // Para compartir archivos
 
 interface Hamburguesa {
   id: number;
@@ -15,11 +18,10 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [hamburguesas, setHamburguesas] = useState<Hamburguesa[]>([]);
   const { token, logout } = useContext(AuthContext);
 
-  // Reemplazamos useEffect por useFocusEffect
   useFocusEffect(
     useCallback(() => {
       if (token) {
-        fetchHamburguesas(); // Recargar hamburguesas cada vez que la pantalla gane foco
+        fetchHamburguesas();
       }
     }, [token])
   );
@@ -37,12 +39,49 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
-  const modificarHamburguesa = (id: number) => {
-    navigation.navigate('ModificarHamburguesa', { id }); // Navegamos a la pantalla de modificación
+  // Función para generar y compartir el PDF usando expo-print y expo-sharing
+  const generatePdf = async (hamburguesa: Hamburguesa) => {
+    try {
+      const htmlContent = `
+        <h1>Ticket de Hamburguesa</h1>
+        <p><strong>Nombre:</strong> ${hamburguesa.nombre}</p>
+        <p><strong>Valor:</strong> ${hamburguesa.valor}</p>
+        <p><strong>Ingredientes:</strong> ${hamburguesa.ingredientes}</p>
+      `;
+
+      // Generar el PDF usando expo-print
+      const { uri } = await Print.printToFileAsync({ html: htmlContent });
+
+      // Definir la ubicación de destino donde se guardará el archivo
+      const destinationUri = `${FileSystem.documentDirectory}ticket_hamburguesa_${hamburguesa.id}.pdf`;
+
+      // Mover el archivo desde el directorio temporal a una ubicación permanente
+      await FileSystem.moveAsync({
+        from: uri,
+        to: destinationUri,
+      });
+
+      // Verificar si el dispositivo permite compartir archivos
+      if (!(await Sharing.isAvailableAsync())) {
+        Alert.alert('Error', 'El dispositivo no soporta la funcionalidad de compartir archivos.');
+        return;
+      }
+
+      // Compartir el archivo PDF
+      await Sharing.shareAsync(destinationUri);
+
+    } catch (error) {
+      console.error('Error al generar el PDF:', error);
+      Alert.alert('Error', 'No se pudo generar el PDF');
+    }
   };
 
-  const imprimirTicket = (id: number) => {
-    console.log(`Imprimir ticket para hamburguesa con ID: ${id}`);
+  const modificarHamburguesa = (id: number) => {
+    navigation.navigate('ModificarHamburguesa', { id });
+  };
+
+  const imprimirTicket = async (hamburguesa: Hamburguesa) => {
+    await generatePdf(hamburguesa); // Llamamos a la función para generar y compartir el PDF
   };
 
   const renderHamburguesa = ({ item }: { item: Hamburguesa }) => (
@@ -51,7 +90,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <Text>Valor: {item.valor}</Text>
       <Text>Ingredientes: {item.ingredientes}</Text>
       <Button title="Modificar" onPress={() => modificarHamburguesa(item.id)} />
-      <Button title="Imprimir Ticket" onPress={() => imprimirTicket(item.id)} />
+      <Button title="Imprimir Ticket" onPress={() => imprimirTicket(item)} />
     </View>
   );
 
