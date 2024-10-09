@@ -3,9 +3,9 @@ import { View, Text, Button, StyleSheet, FlatList, Alert } from 'react-native';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 import AuthContext from '../context/AuthContext';
-import * as Print from 'expo-print'; // Para generar PDFs
-import * as FileSystem from 'expo-file-system'; // Para gestionar archivos
-import * as Sharing from 'expo-sharing'; // Para compartir archivos
+import * as Print from 'expo-print';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing'; 
 
 interface Hamburguesa {
   id: number;
@@ -39,7 +39,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
-  // Función para generar y compartir el PDF usando expo-print y expo-sharing
+
   const generatePdf = async (hamburguesa: Hamburguesa) => {
     try {
       const htmlContent = `
@@ -49,25 +49,25 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <p><strong>Ingredientes:</strong> ${hamburguesa.ingredientes}</p>
       `;
 
-      // Generar el PDF usando expo-print
+
       const { uri } = await Print.printToFileAsync({ html: htmlContent });
 
-      // Definir la ubicación de destino donde se guardará el archivo
+
       const destinationUri = `${FileSystem.documentDirectory}ticket_hamburguesa_${hamburguesa.id}.pdf`;
 
-      // Mover el archivo desde el directorio temporal a una ubicación permanente
+
       await FileSystem.moveAsync({
         from: uri,
         to: destinationUri,
       });
 
-      // Verificar si el dispositivo permite compartir archivos
+
       if (!(await Sharing.isAvailableAsync())) {
         Alert.alert('Error', 'El dispositivo no soporta la funcionalidad de compartir archivos.');
         return;
       }
 
-      // Compartir el archivo PDF
+
       await Sharing.shareAsync(destinationUri);
 
     } catch (error) {
@@ -81,7 +81,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const imprimirTicket = async (hamburguesa: Hamburguesa) => {
-    await generatePdf(hamburguesa); // Llamamos a la función para generar y compartir el PDF
+    await generatePdf(hamburguesa);
   };
 
   const renderHamburguesa = ({ item }: { item: Hamburguesa }) => (

@@ -8,7 +8,6 @@ const login = async (email: string, password: string) => {
   try {
     const response = await axios.post(API_URL + 'login', { email, password });
     const token = response.data.token;
-    // Guardar el token en AsyncStorage
     await AsyncStorage.setItem('token', token);
     return response.data;
   } catch (error: any) {

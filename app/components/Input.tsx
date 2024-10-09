@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextInput, StyleSheet, TextInputProps } from 'react-native';
 
-interface InputProps extends TextInputProps { // Extiende de TextInputProps para aceptar propiedades de TextInput
+interface InputProps extends TextInputProps { 
   placeholder: string;
   value: string;
   onChangeText: (text: string) => void;
@@ -13,8 +13,8 @@ const Input: React.FC<InputProps> = ({
   value,
   onChangeText,
   secureTextEntry,
-  keyboardType,     // Incluye keyboardType
-  autoCapitalize    // Incluye autoCapitalize
+  keyboardType,     
+  autoCapitalize  
 }) => (
   <TextInput
     style={styles.input}
@@ -22,18 +22,20 @@ const Input: React.FC<InputProps> = ({
     value={value}
     onChangeText={onChangeText}
     secureTextEntry={secureTextEntry}
-    keyboardType={keyboardType}        // Añadir keyboardType en el componente
-    autoCapitalize={autoCapitalize}    // Añadir autoCapitalize en el componente
+    keyboardType={keyboardType}        
+    autoCapitalize={autoCapitalize}
   />
 );
 
 const styles = StyleSheet.create({
   input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
+    width: '100%',
+    padding: 15,
     marginBottom: 10,
-    paddingLeft: 8,
+    borderRadius: 25, 
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: '#fff', 
   },
 });
 

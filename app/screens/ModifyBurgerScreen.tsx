@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import axios from 'axios';
-import AuthContext from '../context/AuthContext'; // Importa el contexto para obtener el token
+import AuthContext from '../context/AuthContext'; 
 
 const ModifyBurgerScreen: React.FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
-  const { id } = route.params; // Obtener el ID de la hamburguesa que queremos modificar
+  const { id } = route.params; 
   const [nombre, setNombre] = useState('');
   const [valor, setValor] = useState('');
   const [ingredientes, setIngredientes] = useState('');
-  const { token } = useContext(AuthContext); // Obtener el token del contexto
+  const { token } = useContext(AuthContext); 
 
   useEffect(() => {
-    // Cargar los datos de la hamburguesa existente
+
     const fetchHamburguesa = async () => {
       try {
         const response = await axios.get(`http://192.168.100.45:8080/api/hamburguesas/${id}`, {
           headers: {
-            Authorization: `Bearer ${token}`, // Enviar el token en el encabezado
+            Authorization: `Bearer ${token}`,
           },
         });
         const { nombre, valor, ingredientes } = response.data;
@@ -39,11 +39,11 @@ const ModifyBurgerScreen: React.FC<{ route: any, navigation: any }> = ({ route, 
         ingredientes,
       }, {
         headers: {
-          Authorization: `Bearer ${token}`, // Enviar el token en la solicitud PUT
+          Authorization: `Bearer ${token}`,
         },
       });
       alert('Hamburguesa actualizada con éxito');
-      navigation.goBack(); // Volver a la pantalla anterior
+      navigation.goBack(); 
     } catch (error) {
       console.error(error);
       alert('Hubo un error al actualizar la hamburguesa');

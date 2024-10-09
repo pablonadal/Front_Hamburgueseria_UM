@@ -17,19 +17,18 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 interface AuthProviderProps {
-  children: React.ReactNode; // Definir el tipo correcto para children
+  children: React.ReactNode; 
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [token, setToken] = useState<string | null>(null); // Permitir que el token sea string o null
+  const [token, setToken] = useState<string | null>(null); 
 
   useEffect(() => {
-    // Eliminar el token almacenado cada vez que la aplicación arranque
     const clearTokenOnStart = async () => {
-      await AsyncStorage.removeItem('token');  // Limpiar el token al iniciar la app
-      setToken(null);  // Actualizar el estado
-      setIsAuthenticated(false);  // Marcar como no autenticado
+      await AsyncStorage.removeItem('token'); 
+      setToken(null);
+      setIsAuthenticated(false);
     };
     
     clearTokenOnStart();
@@ -40,13 +39,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (data.token) {
       setIsAuthenticated(true);
       setToken(data.token);
-      // Guardar el token en AsyncStorage
       await AsyncStorage.setItem('token', data.token);
     }
   };
 
   const logout = async () => {
-    // Limpiar el estado y AsyncStorage cuando el usuario cierra sesión
     setIsAuthenticated(false);
     setToken(null);
     await AsyncStorage.removeItem('token');
